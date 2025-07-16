@@ -1,0 +1,33 @@
+{
+  "name": "elms_server",
+  "version": "1.0.0",
+  "description": "This is a online employee leave management system ",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/allwinajith/emp_leave_ms.git"
+  },
+  "author": "Ajith",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/allwinajith/emp_leave_ms/issues"
+  },
+  "homepage": "https://github.com/allwinajith/emp_leave_ms",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.0.1",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.14.1",
+    "yup": "^1.6.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
