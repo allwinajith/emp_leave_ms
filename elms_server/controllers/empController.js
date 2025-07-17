@@ -1,8 +1,11 @@
 import {
+  deleteEmpModel,
   findEmpByEmailModel,
-  findEmpByIdModel,
+  findEmpByEmp_idModel,
+  findEmpByidModel,
   getEmpModel,
   postEmpModel,
+  updateEmpModel,
 } from "../models/empModel.js";
 import bcrypt from "bcryptjs";
 
@@ -46,7 +49,7 @@ export const postEmpCtrlr = async (req, res) => {
       });
     }
     // Check for the unique employee
-    const existingEmpByID = await findEmpByIdModel(employeeData.emp_id);
+    const existingEmpByID = await findEmpByEmp_idModel(employeeData.emp_id);
     if (existingEmpByID.emp_count > 0) {
       return res.status(409).json({
         success: false,
@@ -83,6 +86,111 @@ export const postEmpCtrlr = async (req, res) => {
       success: false,
       message:
         "Error in posting the employee, please try again after some time",
+    });
+  }
+};
+
+export const updateEmpCntrlr = async (req, res) => {
+  const updatableFields = [
+    "emp_id",
+    "first_name",
+    "last_name",
+    "email",
+    "gender",
+    "dob",
+    "department_id",
+    "address",
+    "city",
+    "country",
+    "phone",
+    "status",
+  ];
+
+  try {
+    const { id } = req.params;
+    const modifiedData = req.body;
+
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "ID is required to perform the delete operation",
+      });
+    }
+
+    const employeeExists = await findEmpByidModel(id);
+    if (!employeeExists || employeeExists.length == 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Employee doesn't exist" });
+    }
+
+    const invalidFields = Object.keys(modifiedData).filter(
+      (key) => !updatableFields.includes(key)
+    );
+
+    if (invalidFields.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid fields provided: ${invalidFields.join(", ")}`,
+      });
+    }
+
+    const filteredData = {};
+    for (const key of Object.keys(modifiedData)) {
+      filteredData[key] =
+        typeof modifiedData[key] === "string"
+          ? modifiedData[key].trim()
+          : modifiedData[key];
+    }
+
+    if (Object.keys(filteredData).length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "No valid fields provided for update",
+      });
+    }
+
+    await updateEmpModel(id, modifiedData);
+    return res.status(200).json({
+      success: true,
+      message: "Employee updated successfully",
+    });
+  } catch (error) {
+    console.error("Update failed : ", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+export const deleteEmpCntrlr = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "ID is required to perform the delete operation",
+      });
+    }
+
+    const employeeExists = await findEmpByidModel(id);
+    if (!employeeExists || employeeExists.length == 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Employee doesn't exist with the given id" });
+    }
+
+    await deleteEmpModel(id);
+    return res.status(200).json({
+      success: true,
+      message: "Employee was deleted succcessfully",
+    });
+  } catch (error) {
+    console.error("Error in Employee Deletion :", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
     });
   }
 };
